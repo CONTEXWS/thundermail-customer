@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CONTEXWS Thunderbird Email Tracker</title>
+    <title>CONTEXWS Email Tracker</title>
     <style>
         * {
             margin: 0;
@@ -16,12 +16,12 @@
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             color: #333;
             min-height: 100vh;
+            padding: 20px;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 800px;
             margin: 0 auto;
-            padding: 20px;
         }
 
         .header {
@@ -31,40 +31,35 @@
         }
 
         .header h1 {
-            font-size: 3rem;
+            font-size: 2.5rem;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .header p {
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             opacity: 0.9;
         }
 
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
-            margin-bottom: 40px;
-        }
-
-        .card {
+        .main-card {
             background: rgba(255, 255, 255, 0.95);
             border-radius: 15px;
-            padding: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            padding: 40px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.2);
             backdrop-filter: blur(10px);
-            transition: transform 0.3s ease;
+            margin-bottom: 30px;
         }
 
-        .card:hover {
-            transform: translateY(-5px);
+        .form-section {
+            margin-bottom: 30px;
         }
 
-        .card h2 {
+        .form-section h2 {
             color: #5a67d8;
             margin-bottom: 20px;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
         }
 
         .form-group {
@@ -78,16 +73,16 @@
             color: #4a5568;
         }
 
-        input, textarea, select {
+        input, select {
             width: 100%;
             padding: 12px;
             border: 2px solid #e2e8f0;
             border-radius: 8px;
             font-size: 16px;
-            transition: border-color 0.3s ease;
+            transition: all 0.3s ease;
         }
 
-        input:focus, textarea:focus, select:focus {
+        input:focus, select:focus {
             outline: none;
             border-color: #5a67d8;
             box-shadow: 0 0 0 3px rgba(90, 103, 216, 0.1);
@@ -97,53 +92,91 @@
             background: linear-gradient(135deg, #5a67d8, #667eea);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 15px 30px;
             border-radius: 8px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             width: 100%;
+            margin-top: 10px;
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(90, 103, 216, 0.3);
+            box-shadow: 0 8px 20px rgba(90, 103, 216, 0.3);
         }
 
-        .tracker-info {
-            grid-column: 1 / -1;
-            text-align: center;
+        .btn-secondary {
+            background: #718096;
+            margin-top: 10px;
         }
 
-        .pixel-preview {
+        .btn-secondary:hover {
+            background: #4a5568;
+        }
+
+        .result-section {
             background: #f7fafc;
-            border: 2px dashed #cbd5e0;
+            border: 2px solid #e2e8f0;
             border-radius: 8px;
             padding: 20px;
             margin-top: 20px;
-            font-family: monospace;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .tracking-code {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
             font-size: 14px;
             word-break: break-all;
+            margin: 10px 0;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #5a67d8;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
         }
 
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-top: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
         }
 
         .stat-card {
             background: white;
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 8px;
             text-align: center;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
         .stat-number {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: #5a67d8;
         }
@@ -151,51 +184,51 @@
         .stat-label {
             color: #718096;
             margin-top: 5px;
+            font-size: 0.9rem;
         }
 
-        .features {
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            padding: 30px;
-            margin-top: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        .instructions {
+            background: #ebf8ff;
+            border-left: 4px solid #3182ce;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 0 8px 8px 0;
         }
 
-        .features h2 {
-            color: #5a67d8;
+        .instructions h3 {
+            color: #2b6cb0;
+            margin-bottom: 10px;
+        }
+
+        .instructions ol {
+            margin-left: 20px;
+        }
+
+        .instructions li {
+            margin-bottom: 5px;
+        }
+
+        .app-type {
+            background: #fef5e7;
+            border: 2px solid #f6ad55;
+            border-radius: 8px;
+            padding: 15px;
             margin-bottom: 20px;
             text-align: center;
         }
 
-        .feature-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-
-        .feature-item {
-            padding: 15px;
-            background: #f7fafc;
-            border-radius: 8px;
-            border-left: 4px solid #5a67d8;
-        }
-
-        .download-section {
-            text-align: center;
-            margin-top: 30px;
-            padding: 30px;
-            background: rgba(255, 255, 255, 0.95);
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        .app-type h3 {
+            color: #c05621;
+            margin-bottom: 10px;
         }
 
         @media (max-width: 768px) {
-            .main-content {
-                grid-template-columns: 1fr;
-            }
-            
             .header h1 {
                 font-size: 2rem;
+            }
+            
+            .main-card {
+                padding: 20px;
             }
         }
     </style>
@@ -203,227 +236,180 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>CONTEXWS Thunderbird Email Tracker</h1>
-            <p>Profesyonel Email Takip ve Analiz Sistemi</p>
+            <h1>📧 CONTEXWS Email Tracker</h1>
+            <p>Müşteri emaillerini takip edin ve analiz edin</p>
         </div>
 
-        <div class="main-content">
-            <div class="card">
-                <h2>Tracking Pixel Oluştur</h2>
-                <form id="pixelForm">
+        <div class="app-type">
+            <h3>🌐 Web Uygulaması</h3>
+            <p>Bu bir web tabanlı email takip sistemidir. Thunderbird veya herhangi bir email istemcisi ile kullanılabilir.</p>
+        </div>
+
+        <div class="main-card">
+            <div class="form-section">
+                <h2>🎯 Email Takip Kodu Oluştur</h2>
+                
+                <form id="trackerForm">
                     <div class="form-group">
-                        <label for="campaignName">Kampanya Adı</label>
-                        <input type="text" id="campaignName" required placeholder="Örn: Newsletter-2025">
+                        <label for="customerName">Müşteri/Kampanya Adı</label>
+                        <input type="text" id="customerName" required placeholder="Örn: Ahmet Yılmaz - Teklif Maili">
                     </div>
                     
                     <div class="form-group">
-                        <label for="recipientEmail">Alıcı Email</label>
-                        <input type="email" id="recipientEmail" required placeholder="ornek@email.com">
+                        <label for="customerEmail">Müşteri Email Adresi</label>
+                        <input type="email" id="customerEmail" required placeholder="musteri@email.com">
                     </div>
                     
                     <div class="form-group">
                         <label for="trackingType">Takip Türü</label>
                         <select id="trackingType" required>
-                            <option value="open">Email Açılması</option>
-                            <option value="click">Link Tıklaması</option>
-                            <option value="forward">İletme</option>
-                            <option value="reply">Yanıtlama</option>
+                            <option value="email-open">Email Açılması</option>
+                            <option value="offer-sent">Teklif Gönderildi</option>
+                            <option value="follow-up">Takip Maili</option>
+                            <option value="contract">Sözleşme</option>
+                            <option value="invoice">Fatura</option>
                         </select>
                     </div>
                     
-                    <button type="submit" class="btn">Tracking Pixel Oluştur</button>
+                    <button type="submit" class="btn">📊 Takip Kodu Oluştur</button>
                 </form>
+            </div>
+
+            <div id="resultSection" class="result-section">
+                <h3>✅ Takip Kodu Hazır!</h3>
+                <p>Bu kodu email'inizin HTML versiyonuna ekleyin:</p>
                 
-                <div id="pixelResult" class="pixel-preview" style="display: none;">
-                    <strong>Oluşturulan Tracking Pixel:</strong>
-                    <div id="pixelCode"></div>
+                <div class="tracking-code">
+                    <button class="copy-btn" onclick="copyCode()">Kopyala</button>
+                    <div id="trackingCode"></div>
+                </div>
+                
+                <div class="instructions">
+                    <h3>📋 Kullanım Talimatları:</h3>
+                    <ol>
+                        <li><strong>Thunderbird'de:</strong> Email yazarken "HTML" formatını seçin</li>
+                        <li>Email'inizin en sonuna yukarıdaki kodu yapıştırın</li>
+                        <li>Email'i gönderin</li>
+                        <li>Müşteri email'i açtığında otomatik olarak takip edilecek</li>
+                    </ol>
                 </div>
             </div>
 
-            <div class="card">
-                <h2>Email Template Yöneticisi</h2>
-                <form id="templateForm">
-                    <div class="form-group">
-                        <label for="templateName">Template Adı</label>
-                        <input type="text" id="templateName" required placeholder="Kampanya Template">
-                    </div>
-                    
-                    <div class="form-group">
-                        <label for="htmlContent">HTML İçerik</label>
-                        <textarea id="htmlContent" rows="6" placeholder="HTML email içeriğinizi buraya yapıştırın..."></textarea>
-                    </div>
-                    
-                    <button type="submit" class="btn">Template Kaydet</button>
-                </form>
-                
-                <div class="form-group" style="margin-top: 20px;">
-                    <label for="savedTemplates">Kayıtlı Template'ler</label>
-                    <select id="savedTemplates">
-                        <option value="">Template seçin...</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="card tracker-info">
-                <h2>Anlık Takip İstatistikleri</h2>
+            <div class="form-section">
+                <h2>📈 Takip İstatistikleri</h2>
                 <div class="stats-grid">
                     <div class="stat-card">
-                        <div class="stat-number" id="totalEmails">0</div>
-                        <div class="stat-label">Gönderilen Email</div>
+                        <div class="stat-number" id="totalSent">0</div>
+                        <div class="stat-label">Gönderilen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalOpened">0</div>
+                        <div class="stat-label">Açılan</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-number" id="openRate">0%</div>
                         <div class="stat-label">Açılma Oranı</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-number" id="clickRate">0%</div>
-                        <div class="stat-label">Tıklama Oranı</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="stat-number" id="replyRate">0%</div>
-                        <div class="stat-label">Yanıt Oranı</div>
+                        <div class="stat-number" id="lastActivity">-</div>
+                        <div class="stat-label">Son Aktivite</div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="features">
-            <h2>Özellikler</h2>
-            <div class="feature-list">
-                <div class="feature-item">
-                    <h3>📧 Email Takibi</h3>
-                    <p>Email açılma, tıklama ve yanıtlama takibi</p>
-                </div>
-                <div class="feature-item">
-                    <h3>📊 Detaylı Analiz</h3>
-                    <p>Gerçek zamanlı istatistikler ve raporlama</p>
-                </div>
-                <div class="feature-item">
-                    <h3>🎯 Kampanya Yönetimi</h3>
-                    <p>Çoklu kampanya ve segment takibi</p>
-                </div>
-                <div class="feature-item">
-                    <h3>🔒 Gizlilik Odaklı</h3>
-                    <p>GDPR uyumlu ve güvenli takip sistemi</p>
-                </div>
-                <div class="feature-item">
-                    <h3>⚡ Thunderbird Entegrasyonu</h3>
-                    <p>Doğrudan Thunderbird eklentisi desteği</p>
-                </div>
-                <div class="feature-item">
-                    <h3>📱 Responsive Tasarım</h3>
-                    <p>Tüm cihazlarda mükemmel görünüm</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="download-section">
-            <h2>Thunderbird Eklentisini İndir</h2>
-            <p>CONTEXWS Email Tracker'ı Thunderbird'e yükleyerek daha gelişmiş özelliklerden faydalanın.</p>
-            <button class="btn" onclick="downloadExtension()" style="max-width: 300px; margin: 20px auto;">
-                Eklentiyi İndir (.xpi)
+            <button class="btn btn-secondary" onclick="showTrackingHistory()">
+                📋 Takip Geçmişini Göster
             </button>
+        </div>
+
+        <div id="historyModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000;">
+            <div style="background: white; margin: 50px auto; padding: 30px; border-radius: 10px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                <h2>📋 Takip Geçmişi</h2>
+                <div id="historyContent"></div>
+                <button class="btn" onclick="closeHistory()" style="margin-top: 20px;">Kapat</button>
+            </div>
         </div>
     </div>
 
     <script>
-        // Veri saklama için global değişkenler
+        // Veri saklama
         let trackingData = {
             campaigns: [],
-            templates: [],
             stats: {
-                totalEmails: 0,
-                opens: 0,
-                clicks: 0,
-                replies: 0
+                totalSent: 0,
+                totalOpened: 0,
+                lastActivity: null
             }
         };
 
-        // Sayfa yüklendiğinde verileri geri yükle
+        // Sayfa yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
             loadData();
             updateStats();
-            loadTemplates();
         });
 
-        // Tracking pixel form
-        document.getElementById('pixelForm').addEventListener('submit', function(e) {
+        // Ana form
+        document.getElementById('trackerForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const campaignName = document.getElementById('campaignName').value;
-            const recipientEmail = document.getElementById('recipientEmail').value;
+            const customerName = document.getElementById('customerName').value;
+            const customerEmail = document.getElementById('customerEmail').value;
             const trackingType = document.getElementById('trackingType').value;
             
             const trackingId = generateTrackingId();
-            const pixelUrl = `https://contexws.github.io/track?id=${trackingId}&type=${trackingType}&email=${encodeURIComponent(recipientEmail)}`;
+            const pixelUrl = `https://contexws.github.io/CONTEXWS-Thunderbird-email-tracker/track.php?id=${trackingId}`;
             
-            const pixelCode = `<img src="${pixelUrl}" width="1" height="1" style="display:none;" alt="">`;
+            // Invisible tracking pixel
+            const trackingCode = `<img src="${pixelUrl}" width="1" height="1" style="display:none;border:0;" alt="" />`;
             
             // Kampanyayı kaydet
-            trackingData.campaigns.push({
+            const campaign = {
                 id: trackingId,
-                name: campaignName,
-                recipient: recipientEmail,
+                customerName: customerName,
+                customerEmail: customerEmail,
                 type: trackingType,
                 created: new Date().toISOString(),
                 opened: false,
-                clicked: false
-            });
+                openCount: 0,
+                lastOpen: null
+            };
             
-            trackingData.stats.totalEmails++;
+            trackingData.campaigns.push(campaign);
+            trackingData.stats.totalSent++;
+            
             saveData();
             updateStats();
             
             // Sonucu göster
-            document.getElementById('pixelCode').innerHTML = `
-                <div style="margin-bottom: 10px;"><strong>Pixel URL:</strong><br>${pixelUrl}</div>
-                <div><strong>HTML Kodu:</strong><br>${pixelCode}</div>
-            `;
-            document.getElementById('pixelResult').style.display = 'block';
+            document.getElementById('trackingCode').textContent = trackingCode;
+            document.getElementById('resultSection').classList.add('show');
             
             // Formu temizle
             this.reset();
-        });
-
-        // Template form
-        document.getElementById('templateForm').addEventListener('submit', function(e) {
-            e.preventDefault();
             
-            const templateName = document.getElementById('templateName').value;
-            const htmlContent = document.getElementById('htmlContent').value;
-            
-            trackingData.templates.push({
-                id: Date.now(),
-                name: templateName,
-                content: htmlContent,
-                created: new Date().toISOString()
-            });
-            
-            saveData();
-            loadTemplates();
-            this.reset();
-            
-            alert('Template başarıyla kaydedildi!');
-        });
-
-        // Template seçimi
-        document.getElementById('savedTemplates').addEventListener('change', function() {
-            const templateId = parseInt(this.value);
-            if (templateId) {
-                const template = trackingData.templates.find(t => t.id === templateId);
-                if (template) {
-                    document.getElementById('templateName').value = template.name;
-                    document.getElementById('htmlContent').value = template.content;
-                }
-            }
+            // Sayfayı sonuca kaydır
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
         });
 
         function generateTrackingId() {
             return Date.now().toString(36) + Math.random().toString(36).substr(2);
         }
 
+        function copyCode() {
+            const code = document.getElementById('trackingCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = document.querySelector('.copy-btn');
+                const originalText = btn.textContent;
+                btn.textContent = 'Kopyalandı!';
+                btn.style.background = '#48bb78';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#5a67d8';
+                }, 2000);
+            });
+        }
+
         function saveData() {
-            // Tarayıcı storage'ı kullanmak yerine session içinde saklayalım
             window.trackingData = trackingData;
         }
 
@@ -434,72 +420,73 @@
         }
 
         function updateStats() {
-            document.getElementById('totalEmails').textContent = trackingData.stats.totalEmails;
+            document.getElementById('totalSent').textContent = trackingData.stats.totalSent;
+            document.getElementById('totalOpened').textContent = trackingData.stats.totalOpened;
             
-            const openRate = trackingData.stats.totalEmails > 0 
-                ? Math.round((trackingData.stats.opens / trackingData.stats.totalEmails) * 100) 
+            const openRate = trackingData.stats.totalSent > 0 
+                ? Math.round((trackingData.stats.totalOpened / trackingData.stats.totalSent) * 100) 
                 : 0;
             document.getElementById('openRate').textContent = openRate + '%';
             
-            const clickRate = trackingData.stats.totalEmails > 0 
-                ? Math.round((trackingData.stats.clicks / trackingData.stats.totalEmails) * 100) 
-                : 0;
-            document.getElementById('clickRate').textContent = clickRate + '%';
-            
-            const replyRate = trackingData.stats.totalEmails > 0 
-                ? Math.round((trackingData.stats.replies / trackingData.stats.totalEmails) * 100) 
-                : 0;
-            document.getElementById('replyRate').textContent = replyRate + '%';
+            const lastActivity = trackingData.stats.lastActivity 
+                ? new Date(trackingData.stats.lastActivity).toLocaleString('tr-TR')
+                : '-';
+            document.getElementById('lastActivity').textContent = lastActivity;
         }
 
-        function loadTemplates() {
-            const select = document.getElementById('savedTemplates');
-            select.innerHTML = '<option value="">Template seçin...</option>';
+        function showTrackingHistory() {
+            const historyContent = document.getElementById('historyContent');
             
-            trackingData.templates.forEach(template => {
-                const option = document.createElement('option');
-                option.value = template.id;
-                option.textContent = template.name;
-                select.appendChild(option);
-            });
-        }
-
-        function downloadExtension() {
-            // Thunderbird eklentisi için manifest oluştur
-            const manifest = {
-                manifest_version: 2,
-                name: "CONTEXWS Email Tracker",
-                version: "1.0.0",
-                description: "Advanced email tracking for Thunderbird",
-                author: "CONTEXWS",
-                
-                legacy: {
-                    type: "bootstrap",
-                    options: {
-                        page: "options.html"
-                    }
-                },
-                
-                permissions: [
-                    "messagesModify",
-                    "messagesRead",
-                    "accountsRead",
-                    "storage"
-                ]
-            };
-            
-            alert('Eklenti hazırlanıyor... GitHub repository\'nizde manifest.json dosyasını oluşturun ve bu verileri kullanın:\n\n' + JSON.stringify(manifest, null, 2));
-        }
-
-        // Demo amaçlı rastgele istatistik güncellemesi
-        setInterval(() => {
-            if (Math.random() > 0.8) {
-                trackingData.stats.opens += Math.floor(Math.random() * 3);
-                trackingData.stats.clicks += Math.floor(Math.random() * 2);
-                trackingData.stats.replies += Math.floor(Math.random() * 1);
-                updateStats();
+            if (trackingData.campaigns.length === 0) {
+                historyContent.innerHTML = '<p>Henüz takip edilen email yok.</p>';
+            } else {
+                let html = '<div style="max-height: 400px; overflow-y: auto;">';
+                trackingData.campaigns.forEach(campaign => {
+                    const createdDate = new Date(campaign.created).toLocaleString('tr-TR');
+                    const status = campaign.opened ? '✅ Açıldı' : '⏳ Bekliyor';
+                    const openInfo = campaign.opened ? 
+                        `<br><small>Açılma: ${campaign.openCount} kez, Son: ${new Date(campaign.lastOpen).toLocaleString('tr-TR')}</small>` : '';
+                    
+                    html += `
+                        <div style="border: 1px solid #e2e8f0; padding: 15px; margin: 10px 0; border-radius: 8px;">
+                            <strong>${campaign.customerName}</strong><br>
+                            <small>${campaign.customerEmail}</small><br>
+                            <small>Tür: ${campaign.type}</small><br>
+                            <small>Oluşturulma: ${createdDate}</small><br>
+                            <span style="color: ${campaign.opened ? '#48bb78' : '#ed8936'};">${status}</span>
+                            ${openInfo}
+                        </div>
+                    `;
+                });
+                html += '</div>';
+                historyContent.innerHTML = html;
             }
-        }, 5000);
+            
+            document.getElementById('historyModal').style.display = 'block';
+        }
+
+        function closeHistory() {
+            document.getElementById('historyModal').style.display = 'none';
+        }
+
+        // Simüle edilmiş takip güncellemeleri (demo amaçlı)
+        setInterval(() => {
+            if (trackingData.campaigns.length > 0 && Math.random() > 0.95) {
+                const unreadCampaigns = trackingData.campaigns.filter(c => !c.opened);
+                if (unreadCampaigns.length > 0) {
+                    const randomCampaign = unreadCampaigns[Math.floor(Math.random() * unreadCampaigns.length)];
+                    randomCampaign.opened = true;
+                    randomCampaign.openCount = 1;
+                    randomCampaign.lastOpen = new Date().toISOString();
+                    
+                    trackingData.stats.totalOpened++;
+                    trackingData.stats.lastActivity = new Date().toISOString();
+                    
+                    updateStats();
+                    saveData();
+                }
+            }
+        }, 10000);
     </script>
 </body>
 </html>
